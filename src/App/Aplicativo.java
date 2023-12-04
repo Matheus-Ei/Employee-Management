@@ -15,6 +15,7 @@ public class Aplicativo {
         System.out.println("0-Sair do programa");
         System.out.println("1-Cadastrar novo usuário");
         System.out.println("2-Listar os usuários");
+        System.out.println("3-Deletar usuário");
 
         String opcoes;
 
@@ -34,6 +35,12 @@ public class Aplicativo {
                     leitorScanner.nextLine();
                     break;
 
+                case "3":
+                    teste.deletarUsuario();
+                    System.out.println("Precisone qualquer tecla para continuar");
+                    leitorScanner.nextLine();
+                    break;
+
                 default:
                     break;
             }
@@ -43,6 +50,7 @@ public class Aplicativo {
                 System.out.println("0-Sair do programa");
                 System.out.println("1-Cadastrar novo usuário");
                 System.out.println("2-Listar os usuários");
+                System.out.println("3-Deletar usuário");
             }
 
         } while (!opcoes.equals("0"));
