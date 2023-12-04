@@ -29,7 +29,13 @@ import java.io.IOException;
 public class Admin extends Usuario {
     public String nome;
 
-    String diretorioAreaDeTrabalho = System.getProperty("user.home") + "/Desktop/";
+    // aqui dependendo se o sistime operacional estivem com os nomes em portugues ou
+    // em ingles
+    // vai mudar o ultimo nome da linha, podendo se Desktop ou Área de Trabalho
+    // String diretorioAreaDeTrabalho = System.getProperty("user.home") +
+    // "/Desktop/";
+
+    String diretorioAreaDeTrabalho = System.getProperty("user.home") + "/Área de Trabalho/";
 
     // Nome do arquivo
     String dadosDoUsuario = "DadosDoUsuario.txt";
@@ -45,7 +51,10 @@ public class Admin extends Usuario {
     public void cadastrarUsuario() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Digite o seu email");
-        String email = scanner.nextLine();
+        this.setEmail(scanner.nextLine());
+
+        String email = this.getEmail();
+        String senha = this.getSenha();
 
         if (arquivoUsuarios.exists()) {
             try (FileReader leitorArquivo = new FileReader(arquivoUsuarios);
@@ -59,7 +68,7 @@ public class Admin extends Usuario {
                     if (linha.equals("email: " + email)) {
                         System.out.println("Ja tem um usuario cadastrado com esse email");
                         System.out.println("Insira o email novamente");
-                        email = scanner.nextLine();
+                        this.setEmail(scanner.nextLine());
                     }
                 }
 
@@ -68,10 +77,10 @@ public class Admin extends Usuario {
             }
         }
 
-        System.out.println("Digite a sSua senha");
-        String senha = scanner.nextLine();
+        System.out.println("Digite a sua senha");
+        this.setSenha(scanner.nextLine());
+
         this.fazerLogin(email, senha);
-        // Obtendo o diretório da área de trabalho do usuário
 
         if (!arquivoDados.exists()) {
             try {
@@ -122,7 +131,8 @@ public class Admin extends Usuario {
     public void deletarUsuario() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Digite o email a ser deletado:");
-        String email = scanner.nextLine();
+        this.setEmail(scanner.nextLine());
+        String email = this.getEmail();
         String deletarLinha = "email: " + email;
 
         // Configuração do arquivo temporário
@@ -130,38 +140,17 @@ public class Admin extends Usuario {
         String caminhoTemporario = diretorioAreaDeTrabalho + temporarioFile;
         File arquivoTemporario = new File(caminhoTemporario);
 
-        // Verifica se o arquivo de usuários existe
-        if (arquivoUsuarios.exists()) {
-            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(arquivoUsuarios));
-                    BufferedWriter escritorTemporario = new BufferedWriter(new FileWriter(arquivoTemporario, true))) {
+        fazerTrocaDeArquivos(arquivoUsuarios, arquivoTemporario, deletarLinha);
+        fazerTrocaDeArquivos(arquivoDados, arquivoTemporario, deletarLinha);
 
-                String linha;
+    }
 
-                // Lê cada linha do arquivo original de usuários
-                while ((linha = bufferedReader.readLine()) != null) {
-                    // Processa cada linha
-                    if (!linha.contains(deletarLinha)) {
-                        // Se a linha não contiver a string a ser deletada, escreve no arquivo
-                        // temporário
-                        escritorTemporario.write(linha);
-                        escritorTemporario.newLine();
-                    }
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            // Substitui o arquivo original pelo temporário
-            substituirArquivo(arquivoUsuarios, arquivoTemporario);
-        } else {
-            System.out.println("O arquivo de usuários está vazio!!");
-        }
-
-        // Verifica se o arquivo de dados existe
-        if (arquivoDados.exists()) {
-            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(arquivoDados));
-                    BufferedWriter escritorTemporario = new BufferedWriter(new FileWriter(arquivoTemporario, true))) {
+    // usa o static para nao precisar instanciar ela dentro de onde for usar pelo
+    // que eu entendi
+    private static void fazerTrocaDeArquivos(File caminhoArquivo, File caminhoTemporario, String deletarLinha) {
+        if (caminhoArquivo.exists()) {
+            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(caminhoArquivo));
+                    BufferedWriter escritorTemporario = new BufferedWriter(new FileWriter(caminhoTemporario, true))) {
 
                 String linha;
 
@@ -181,7 +170,7 @@ public class Admin extends Usuario {
             }
 
             // Substitui o arquivo original de dados pelo temporário
-            substituirArquivo(arquivoDados, arquivoTemporario);
+            substituirArquivo(caminhoArquivo, caminhoTemporario);
         } else {
             System.out.println("O arquivo de dados está vazio!!");
         }
