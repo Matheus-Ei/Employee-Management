@@ -35,7 +35,7 @@ public class Admin extends Usuario {
     // String diretorioAreaDeTrabalho = System.getProperty("user.home") +
     // "/Desktop/";
 
-    String diretorioAreaDeTrabalho = System.getProperty("user.home") + "/Área de Trabalho/";
+    String diretorioAreaDeTrabalho = System.getProperty("user.home") + "/Desktop/";
 
     // Nome do arquivo
     String dadosDoUsuario = "DadosDoUsuario.txt";
@@ -54,7 +54,12 @@ public class Admin extends Usuario {
         this.setEmail(scanner.nextLine());
 
         String email = this.getEmail();
-        String senha = this.getSenha();
+
+        while (email.length() < 7) {
+            System.out.println("O email é muito curto, digite novamente:");
+            this.setEmail(scanner.nextLine());
+            email = this.getEmail();
+        }
 
         if (arquivoUsuarios.exists()) {
             try (FileReader leitorArquivo = new FileReader(arquivoUsuarios);
@@ -69,6 +74,7 @@ public class Admin extends Usuario {
                         System.out.println("Ja tem um usuario cadastrado com esse email");
                         System.out.println("Insira o email novamente");
                         this.setEmail(scanner.nextLine());
+                        email = this.getEmail();
                     }
                 }
 
@@ -79,6 +85,13 @@ public class Admin extends Usuario {
 
         System.out.println("Digite a sua senha");
         this.setSenha(scanner.nextLine());
+        String senha = this.getSenha();
+
+        while (senha.length() < 5) {
+            System.out.println("A senha é muito curta, digite novamente");
+            this.setSenha(scanner.nextLine());
+            senha = this.getSenha();
+        }
 
         this.fazerLogin(email, senha);
 
@@ -91,7 +104,7 @@ public class Admin extends Usuario {
             }
         }
 
-        String dados = "email: " + email + "    senha: " + senha + "\n";
+        String dados = "email: " + email + "    senha: " + senha + System.lineSeparator();
 
         try (FileWriter escritor = new FileWriter(caminhoParaDadosDoUsuario, true)) {
             escritor.write(dados);
@@ -100,7 +113,7 @@ public class Admin extends Usuario {
         }
 
         try (FileWriter escritor = new FileWriter(caminhoParaTodosUsuarios, true)) {
-            escritor.write("email: " + email + "\n");
+            escritor.write("email: " + email + System.lineSeparator());
         } catch (IOException e) {
             e.printStackTrace();
         }

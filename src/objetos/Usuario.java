@@ -20,6 +20,9 @@ public class Usuario {
         return this.senha;
     }
 
+    public void criarConta(String email, String senha){
+        
+    }
 
     public void fazerLogin(String userEmail, String userSenha) {
 
