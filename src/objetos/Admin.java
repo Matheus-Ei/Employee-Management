@@ -27,7 +27,7 @@ import java.io.IOException;
  */
 
 public class Admin extends Usuario {
-    public String nome;
+    String nome;
 
     // aqui dependendo se o sistime operacional estivem com os nomes em portugues ou
     // em ingles
@@ -47,6 +47,18 @@ public class Admin extends Usuario {
 
     File arquivoDados = new File(caminhoParaDadosDoUsuario);
     File arquivoUsuarios = new File(caminhoParaTodosUsuarios);
+
+    public File usuarioExiste(){
+        return arquivoDados;
+    }
+
+    public void setName(String nome){
+        this.nome = nome;
+    }
+
+    public String getName(){
+        return this.nome;
+    }
 
     public void cadastrarUsuario() {
         Scanner scanner = new Scanner(System.in);
@@ -126,10 +138,12 @@ public class Admin extends Usuario {
 
                 String linha;
 
+                int count = 1;
                 // Lê cada linha do arquivo
                 while ((linha = bufferedReader.readLine()) != null) {
                     // Processa cada linha conforme necessário
-                    System.out.println(linha);
+                    System.out.println(count + " - " + linha);
+                    count++;
                 }
 
             } catch (IOException e) {

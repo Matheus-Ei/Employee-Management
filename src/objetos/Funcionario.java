@@ -1,6 +1,8 @@
 package objetos;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
@@ -48,7 +50,7 @@ public class Funcionario {
             }
         }
 
-        String produto = "Nome: " + newProduto.getNOme() + "\tValor: " + newProduto.getValor() + System.lineSeparator();
+        String produto = "Nome: " + newProduto.getNOme() + "\tR$: " + newProduto.getValor() + System.lineSeparator();
 
         try (FileWriter escritor = new FileWriter(caminhoParaProdutos, true)) {
             escritor.write(produto);
@@ -59,7 +61,26 @@ public class Funcionario {
     }
 
     public void listarProdutos() {
+        if (arquivoProdutos.exists()) {
+            try (FileReader leitorArquivo = new FileReader(arquivoProdutos);
+                    BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
 
+                String linha;
+
+                int count = 1;
+                // Lê cada linha do arquivo
+                while ((linha = bufferedReader.readLine()) != null) {
+                    // Processa cada linha conforme necessário
+                    System.out.println(count + " - " + linha);
+                    count++;
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("O arquivo esta vazio!!");
+        }
     }
 
     public void relatorioVendas() {
