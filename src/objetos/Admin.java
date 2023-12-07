@@ -28,29 +28,8 @@ import java.io.IOException;
 
 public class Admin extends Usuario {
     String nome;
-
-    // aqui dependendo se o sistime operacional estivem com os nomes em portugues ou
-    // em ingles
-    // vai mudar o ultimo nome da linha, podendo se Desktop ou Área de Trabalho
-    // String diretorioAreaDeTrabalho = System.getProperty("user.home") +
-    // "/Desktop/";
-
-    String diretorioAreaDeTrabalho = System.getProperty("user.home") + "/Desktop/";
-
-    // Nome do arquivo
-    String dadosDoUsuario = "DadosDoUsuario.txt";
-    String todosUsuarios = "TodosUsuarios.txt";
-
-    // Caminho completo do arquivo
-    String caminhoParaDadosDoUsuario = diretorioAreaDeTrabalho + dadosDoUsuario;
-    String caminhoParaTodosUsuarios = diretorioAreaDeTrabalho + todosUsuarios;
-
-    File arquivoDados = new File(caminhoParaDadosDoUsuario);
-    File arquivoUsuarios = new File(caminhoParaTodosUsuarios);
-
-    public File usuarioExiste(){
-        return arquivoDados;
-    }
+    Arquivos arquivo = new Arquivos();
+    
 
     public void setName(String nome){
         this.nome = nome;
@@ -73,8 +52,8 @@ public class Admin extends Usuario {
             email = this.getEmail();
         }
 
-        if (arquivoUsuarios.exists()) {
-            try (FileReader leitorArquivo = new FileReader(arquivoUsuarios);
+        if (arquivo.arquivoUsuarios.exists()) {
+            try (FileReader leitorArquivo = new FileReader(arquivo.arquivoUsuarios);
                     BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
 
                 String linha;
@@ -105,12 +84,10 @@ public class Admin extends Usuario {
             senha = this.getSenha();
         }
 
-        this.fazerLogin(email, senha);
-
-        if (!arquivoDados.exists()) {
+        if (!arquivo.arquivoDados.exists()) {
             try {
-                arquivoDados.createNewFile();
-                arquivoUsuarios.createNewFile();
+                arquivo.arquivoDados.createNewFile();
+                arquivo.arquivoUsuarios.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -118,13 +95,13 @@ public class Admin extends Usuario {
 
         String dados = "email: " + email + "    senha: " + senha + System.lineSeparator();
 
-        try (FileWriter escritor = new FileWriter(caminhoParaDadosDoUsuario, true)) {
+        try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaDadosDoUsuario(), true)) {
             escritor.write(dados);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        try (FileWriter escritor = new FileWriter(caminhoParaTodosUsuarios, true)) {
+        try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaTodosUsuarios(), true)) {
             escritor.write("email: " + email + System.lineSeparator());
         } catch (IOException e) {
             e.printStackTrace();
@@ -132,8 +109,8 @@ public class Admin extends Usuario {
     }
 
     public void listarUsuarios() {
-        if (arquivoUsuarios.exists()) {
-            try (FileReader leitorArquivo = new FileReader(arquivoUsuarios);
+        if (arquivo.arquivoUsuarios.exists()) {
+            try (FileReader leitorArquivo = new FileReader(arquivo.arquivoUsuarios);
                     BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
 
                 String linha;
@@ -164,11 +141,11 @@ public class Admin extends Usuario {
 
         // Configuração do arquivo temporário
         String temporarioFile = "Temporario.txt";
-        String caminhoTemporario = diretorioAreaDeTrabalho + temporarioFile;
+        String caminhoTemporario = arquivo.getDiretorioAreaDeTrabalho() + temporarioFile;
         File arquivoTemporario = new File(caminhoTemporario);
 
-        fazerTrocaDeArquivos(arquivoUsuarios, arquivoTemporario, deletarLinha);
-        fazerTrocaDeArquivos(arquivoDados, arquivoTemporario, deletarLinha);
+        fazerTrocaDeArquivos(arquivo.getArquivoUsuario(), arquivoTemporario, deletarLinha);
+        fazerTrocaDeArquivos(arquivo.getArquivoDados(), arquivoTemporario, deletarLinha);
 
     }
 
