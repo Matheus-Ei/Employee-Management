@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.File;
 import java.io.FileReader;
 
+import objetos.Utilitarios.Arquivos;
+import objetos.Utilitarios.FuncaoUtilitaria;
+
 /*
 GRAVAR DADOS EM ARQUIVOS
 
@@ -27,30 +30,21 @@ import java.io.IOException;
  */
 
 public class Admin extends Usuario {
-    String nome;
     Arquivos arquivo = new Arquivos();
-    
 
-    public void setName(String nome){
-        this.nome = nome;
+    public Admin(String nome, String email, String senha) {
+        super(nome, email, senha);
     }
 
-    public String getName(){
-        return this.nome;
-    }
+    FuncaoUtilitaria validacao = new FuncaoUtilitaria();
 
     public void cadastrarUsuario() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Digite o seu email");
-        this.setEmail(scanner.nextLine());
 
-        String email = this.getEmail();
-
-        while (email.length() < 7) {
-            System.out.println("O email é muito curto, digite novamente:");
-            this.setEmail(scanner.nextLine());
-            email = this.getEmail();
-        }
+        System.out.println("Digite o seu nome:");
+        String userName = validacao.validadorDeDados(scannerString.nextLine());
+        System.out.println("Digite o seu email:");
+        String userEmail = validacao.validadorDeDados(scannerString.nextLine());
 
         if (arquivo.arquivoUsuarios.exists()) {
             try (FileReader leitorArquivo = new FileReader(arquivo.arquivoUsuarios);
@@ -61,11 +55,10 @@ public class Admin extends Usuario {
                 // Lê cada linha do arquivo
                 while ((linha = bufferedReader.readLine()) != null) {
                     // Processa cada linha conforme necessário
-                    if (linha.equals("email: " + email)) {
+                    if (linha.equals("email: " + userEmail)) {
                         System.out.println("Ja tem um usuario cadastrado com esse email");
                         System.out.println("Insira o email novamente");
-                        this.setEmail(scanner.nextLine());
-                        email = this.getEmail();
+                        userEmail = scanner.nextLine();
                     }
                 }
 
@@ -75,14 +68,9 @@ public class Admin extends Usuario {
         }
 
         System.out.println("Digite a sua senha");
-        this.setSenha(scanner.nextLine());
-        String senha = this.getSenha();
+        String userPassword = validacao.validadorDeDados(scannerString.nextLine());
 
-        while (senha.length() < 5) {
-            System.out.println("A senha é muito curta, digite novamente");
-            this.setSenha(scanner.nextLine());
-            senha = this.getSenha();
-        }
+        Funcionario funcionario = new Funcionario(userName, userEmail, userPassword);
 
         if (!arquivo.arquivoDados.exists()) {
             try {
@@ -93,7 +81,11 @@ public class Admin extends Usuario {
             }
         }
 
-        String dados = "email: " + email + "    senha: " + senha + System.lineSeparator();
+        String dados = "Nome: " + funcionario.getName() + System.lineSeparator() + "    Email: "
+                + funcionario.getEmail()
+                + "    Senha: "
+                + funcionario.getSenha()
+                + System.lineSeparator();
 
         try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaDadosDoUsuario(), true)) {
             escritor.write(dados);
@@ -102,7 +94,7 @@ public class Admin extends Usuario {
         }
 
         try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaTodosUsuarios(), true)) {
-            escritor.write("email: " + email + System.lineSeparator());
+            escritor.write("Email: " + funcionario.getEmail() + System.lineSeparator());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -135,9 +127,8 @@ public class Admin extends Usuario {
     public void deletarUsuario() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Digite o email a ser deletado:");
-        this.setEmail(scanner.nextLine());
-        String email = this.getEmail();
-        String deletarLinha = "email: " + email;
+        String email = scanner.nextLine();
+        String deletarLinha = "Email: " + email;
 
         // Configuração do arquivo temporário
         String temporarioFile = "Temporario.txt";

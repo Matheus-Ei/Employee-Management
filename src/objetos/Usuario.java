@@ -6,8 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 
+import objetos.Utilitarios.Arquivos;
+
 public class Usuario {
 
+    private String nome;
     private String email;
     private String senha;
     private Boolean isAdmin;
@@ -15,16 +18,18 @@ public class Usuario {
     Cantina cantina = new Cantina();
     Arquivos arquivo = new Arquivos();
 
-    // Caminho completo do arquivo
+    // construtur, sempre que for instanciar um usuario tera que ter esse 3
+    // elementos
+    public Usuario(String nome, String email, String senha) {
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+    }
 
     Scanner scannerString = new Scanner(System.in);
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
+    public String getName() {
+        return this.nome;
     }
 
     public String getEmail() {
@@ -37,40 +42,6 @@ public class Usuario {
 
     public void criarConta(String email, String senha) {
 
-    }
-
-    public void fazerLogin() {
-        System.out.println("Digite o seu email");
-        this.email = scannerString.nextLine();
-        System.out.println("Digite a seua senha");
-        this.senha = scannerString.nextLine();
-
-        if (!arquivo.getArquivoDados().exists()) {
-            try (FileReader leitorArquivo = new FileReader(arquivo.getArquivoCantina());
-                    BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
-
-                String linha;
-
-                // Lê cada linha do arquivo
-                while ((linha = bufferedReader.readLine()) != null) {
-                    // Processa cada linha conforme necessário
-                    if (linha.equals("Email: " + this.email)) {
-                        this.email = linha;
-                    }
-                    if (linha.equals("Senha: " + this.senha)) {
-                        this.senha = linha;
-                    }
-                }
-                if (this.email.contains("Email:") && this.senha.contains("Senha")) {
-                    this.isAdmin = true;
-                } else {
-                    this.isAdmin = false;
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public Boolean getIsAdmin() {

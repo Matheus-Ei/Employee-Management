@@ -1,4 +1,4 @@
-package objetos;
+package objetos.Utilitarios;
 
 import java.io.File;
 
@@ -9,13 +9,13 @@ public class Arquivos {
     String dadosCantina = "Cantina.txt";
 
     // Caminho completo do arquivo
-    String caminhoParaDadosDoUsuario = diretorioAreaDeTrabalho + dadosDoUsuario;
-    String caminhoParaTodosUsuarios = diretorioAreaDeTrabalho + todosUsuarios;
-    String caminhoParaCantina = diretorioAreaDeTrabalho + dadosCantina;
+    public String caminhoParaDadosDoUsuario = diretorioAreaDeTrabalho + dadosDoUsuario;
+    public String caminhoParaTodosUsuarios = diretorioAreaDeTrabalho + todosUsuarios;
+    public String caminhoParaCantina = diretorioAreaDeTrabalho + dadosCantina;
 
-    File arquivoDados = new File(caminhoParaDadosDoUsuario);
-    File arquivoUsuarios = new File(caminhoParaTodosUsuarios);
-    File arquivoCantina = new File(caminhoParaCantina);
+    public File arquivoDados = new File(caminhoParaDadosDoUsuario);
+    public File arquivoUsuarios = new File(caminhoParaTodosUsuarios);
+    public File arquivoCantina = new File(caminhoParaCantina);
 
     public String getDiretorioAreaDeTrabalho() {
         return diretorioAreaDeTrabalho;

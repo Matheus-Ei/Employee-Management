@@ -7,11 +7,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class Funcionario {
-    public String nome;
+public class Funcionario extends Usuario {
     Scanner scannerString = new Scanner(System.in);
     Scanner scannerDouble = new Scanner(System.in);
 
+    public Funcionario(String nome, String email, String senha){
+        super(nome, email, senha);
+    } 
+    
     Produto newProduto;
 
     String diretorioAreaDeTrabalho = System.getProperty("user.home") + "/Desktop/";

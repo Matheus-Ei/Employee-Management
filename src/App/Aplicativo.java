@@ -3,23 +3,20 @@ package App;
 import java.util.Scanner;
 
 // Importações de classes/objetos
-import objetos.Admin;
 import objetos.Cantina;
-import objetos.Funcionario;
-import objetos.Usuario;
+import objetos.Utilitarios.*;
 
 public class Aplicativo {
 
     public static void main(String[] args) {
         Scanner leitorScanner = new Scanner(System.in);
-        Admin adiministrador = new Admin();
         Cantina cantina = new Cantina();
-        Funcionario funcionario = new Funcionario();
-        Usuario usuario = new Usuario();
+        FuncaoUtilitaria utilitaria = new FuncaoUtilitaria();
+        Arquivos arquivo = new Arquivos();
 
-        while (!cantina.cantinaExist().exists() || cantina.cantinaExist().length() == 0) {
+        while (!arquivo.arquivoCantina.exists() || arquivo.arquivoCantina.length() == 0) {
             cantina.criarCantina();
-            continuar();
+            utilitaria.continuar();
         }
 
         System.out.println(System.lineSeparator() + "Selecione sua opção: " + System.lineSeparator());
@@ -41,18 +38,18 @@ public class Aplicativo {
         do {
             opcoes = leitorScanner.nextLine();
             if (opcoes.equals("1")) {
-                usuario.fazerLogin();
-                // parei aquiii continuar aquiiiii
-                // parei aquiii continuar aquiiiii
-                // parei aquiii continuar aquiiiii
-                // parei aquiii continuar aquiiiii
-                // parei aquiii continuar aquiiiii
-                // parei aquiii continuar aquiiiii
-                if (usuario.getIsAdmin() == true) {
-
-                } else {
-
+                System.out.println("Digite o seu email");
+                String email = utilitaria.validadorDeDados(leitorScanner.nextLine());
+                System.out.println("Digite a seua senha");
+                String senha = utilitaria.validadorDeDados(leitorScanner.nextLine());
+                Boolean isAdmin = cantina.loginAdm(email, senha);
+                Boolean isFuncionario = null;
+                if (!isAdmin) {
+                    isFuncionario = cantina.loginFuncionario(email, senha);
                 }
+
+                System.out.println(isAdmin);
+                System.out.println(isFuncionario);
             }
             /*
              * switch (opcoes) {
@@ -98,14 +95,5 @@ public class Aplicativo {
              */
 
         } while (!opcoes.equals("0"));
-
-        leitorScanner.close();
     }
-
-    private static void continuar() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("\nPrecisone qualquer tecla para continuar");
-        scanner.nextLine();
-    }
-
 }

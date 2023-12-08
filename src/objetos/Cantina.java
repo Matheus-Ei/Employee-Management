@@ -1,9 +1,13 @@
 package objetos;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
+
+import objetos.Utilitarios.*;
 
 public class Cantina {
     public String nome;
@@ -17,14 +21,11 @@ public class Cantina {
     String caminhoParaCantina = diretorioAreaDeTrabalho + dadosCantina;
 
     File arquivoCantina = new File(caminhoParaCantina);
-
-    // com esse metodo eu posso saber se a cantina ja existe para as opções que eu
-    // for mostrar para o ususario
-    public File cantinaExist() {
-        return arquivoCantina;
-    }
+    Arquivos arquivo = new Arquivos();
+    FuncaoUtilitaria validacao = new FuncaoUtilitaria();
 
     public void criarCantina() {
+        Admin adiministraor;
         Scanner scannerString = new Scanner(System.in);
         Scanner scannerInt = new Scanner(System.in);
         System.out.println("SEJA BEM VINDO AO GERENCIADOR DE CANTINAS");
@@ -48,28 +49,14 @@ public class Cantina {
         System.out.printf("Cantina %s criada com sucesso!", this.nome);
 
         System.out.println("\nAGORA VAMOS CADASTRAR O ADIMINISTRADOR PARA GERENCIAR A CANTINA:");
-        Admin adiministraor = new Admin();
         // usuario tem nome, email e senha;
         System.out.println("Digite o seu nome:");
-        adiministraor.setName(scannerString.nextLine());
-        while (adiministraor.getName().length() == 0) {
-            System.out.println("Nome muito curto, digite novamente");
-            adiministraor.setName(scannerString.nextLine());
-        }
-
+        String userName = validacao.validadorDeDados(scannerString.nextLine());
         System.out.println("Digite o seu email:");
-        adiministraor.setEmail(scannerString.nextLine());
-        while (adiministraor.getEmail().length() < 5) {
-            System.out.println("Email muito curto, digite novamente");
-            adiministraor.setEmail(scannerString.nextLine());
-        }
-
+        String userEmail = validacao.validadorDeDados(scannerString.nextLine());
         System.out.println("Digite a sua senha:");
-        adiministraor.setSenha(scannerString.nextLine());
-        while (adiministraor.getSenha().length() < 4) {
-            System.out.println("Senha muito curta, digite novamente");
-            adiministraor.setSenha(scannerString.nextLine());
-        }
+        String userPassword = validacao.validadorDeDados(scannerString.nextLine());
+        adiministraor = new Admin(userName, userEmail, userPassword);
 
         if (!arquivoCantina.exists()) {
             try {
@@ -90,6 +77,47 @@ public class Cantina {
         }
 
         System.out.println("Adiministrador adicionado com sucesso");
+    }
+
+    public boolean loginAdm(String email, String senha) {
+        return login(arquivo.getArquivoCantina(), email, senha);
+    }
+
+    public boolean loginFuncionario(String email, String senha) {
+        return login(arquivo.getArquivoDados(), email, senha);
+    }
+
+    private static boolean login(File nomeDoArquivo, String email, String senha) {
+        if (nomeDoArquivo.exists()) {
+            String linha;
+
+            Boolean achouEmail = false;
+            Boolean achouSenha = false;
+            try (FileReader leitorArquivo = new FileReader(nomeDoArquivo);
+                    BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
+                // Lê cada linha do arquivo e verefica se é um adm ou fucnionario que fez login
+                while ((linha = bufferedReader.readLine()) != null) {
+                    // Processa cada linha conforme necessário
+                    if (linha.equals("Email: " + email)) {
+                        achouEmail = true;
+                    }
+                    if (linha.equals("Senha: " + senha)) {
+                        achouSenha = true;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (achouEmail && achouSenha) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
     }
 
 }
