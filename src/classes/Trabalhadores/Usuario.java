@@ -1,4 +1,4 @@
-package classes;
+package classes.Trabalhadores;
 
 abstract public class Usuario {
 

@@ -1,4 +1,4 @@
-package classes;
+package classes.Trabalhadores;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -23,6 +23,8 @@ public class AdminLogado {
         System.out.println("1 - Cadastrar funcionario:");
         System.out.println("2 - Listar funcionarios");
         System.out.println("3 - Exluir funcionario ");
+        System.out.println("4- Exibir relatorio de vendas");
+        System.out.println("5- Ver o total de dinheiro em vendas");
 
         String opcao = "-1";
 
@@ -41,7 +43,14 @@ public class AdminLogado {
                     this.deletarUsuario();
                     utilitaria.continuar();
                     break;
-
+                case "4":
+                    this.relatorioVendas();
+                    utilitaria.continuar();
+                    break;
+                case "5":
+                    this.acessarTotalEmVendas();
+                    utilitaria.continuar();
+                    break;
                 default:
                     break;
             }
@@ -51,6 +60,9 @@ public class AdminLogado {
                 System.out.println("1 - Cadastrar funcionario:");
                 System.out.println("2 - Listar funcionarios");
                 System.out.println("3 - Exluir funcionario ");
+                System.out.println("4- Exibir relatorio de vendas");
+                System.out.println("5- Ver o total de dinheiro em vendas");
+
             }
         } while (!opcao.equals("0"));
 
@@ -63,8 +75,8 @@ public class AdminLogado {
         System.out.println("Digite o seu email:");
         String userEmail = utilitaria.validadorDeDados(scannerString.nextLine());
 
-        if (arquivo.arquivoUsuarios.exists()) {
-            try (FileReader leitorArquivo = new FileReader(arquivo.arquivoUsuarios);
+        if (arquivo.getArquivoUsuario().exists()) {
+            try (FileReader leitorArquivo = new FileReader(arquivo.getArquivoUsuario());
                     BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
 
                 String linha;
@@ -89,16 +101,8 @@ public class AdminLogado {
 
         Funcionario funcionario = new Funcionario(userName, userEmail, userPassword);
 
-        if (!arquivo.arquivoDados.exists()) {
-            try {
-                arquivo.arquivoDados.createNewFile();
-                arquivo.arquivoUsuarios.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        String dados = funcionario.getName() + " " + funcionario.getEmail() + " " + funcionario.getSenha();
+        String dados = funcionario.getName() + " " + funcionario.getEmail() + " " + funcionario.getSenha()
+                + System.lineSeparator();
 
         try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaDadosDoUsuario(), true)) {
             escritor.write(dados);
@@ -107,15 +111,16 @@ public class AdminLogado {
         }
 
         try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaTodosUsuarios(), true)) {
-            escritor.write("Email: " + funcionario.getEmail() + System.lineSeparator());
+            escritor.write("Funcionario: " + funcionario.getName() + "\tEmail: " + funcionario.getEmail()
+                    + System.lineSeparator());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void listarUsuarios() {
-        if (arquivo.arquivoUsuarios.exists()) {
-            try (FileReader leitorArquivo = new FileReader(arquivo.arquivoUsuarios);
+        if (arquivo.getArquivoUsuario().exists()) {
+            try (FileReader leitorArquivo = new FileReader(arquivo.getArquivoUsuario());
                     BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
 
                 String linha;
@@ -184,16 +189,6 @@ public class AdminLogado {
         }
     }
 
-    // Método para substituir o arquivo original pelo temporário
-    /*
-     * private: O método só é acessível dentro da própria classe Admin. Outras
-     * classes fora de Admin não podem chamar diretamente esse método.
-     * 
-     * static: O método pertence à classe Admin e não a instâncias específicas dessa
-     * classe. Pode ser chamado diretamente usando o nome da classe
-     * (Admin.substituirArquivo(...)) sem a necessidade de criar uma instância de
-     * Admin.
-     */
     private static void substituirArquivo(File arquivoOriginal, File arquivoTemporario) {
         // Deleta o arquivo original
         if (!arquivoOriginal.delete()) {
@@ -207,11 +202,62 @@ public class AdminLogado {
         }
     }
 
-    public void acessarRelatorioVendas() {
+    private void relatorioVendas() {
+        if (arquivo.getArquivoRelatorioVendas().exists() && arquivo.getArquivoRelatorioVendas().length() != 0) {
+            try (FileReader leitorArquivo = new FileReader(arquivo.getArquivoRelatorioVendas());
+                    BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
+
+                String linha;
+
+                System.out.println(System.lineSeparator() + "------------------------------------------------------"
+                        + System.lineSeparator());
+                while ((linha = bufferedReader.readLine()) != null) {
+                    System.out.println("\t" + linha);
+                }
+                System.out.println(System.lineSeparator() + "------------------------------------------------------"
+                        + System.lineSeparator());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Nenhuma venda realizada.");
+        }
 
     }
 
-    public void acessarListaVendas() {
+    public void acessarTotalEmVendas() {
+        try (BufferedReader leitor = new BufferedReader(new FileReader(arquivo.getArquivoRelatorioVendas()))) {
+            String linha;
 
+            double totalEmVendas = 0;
+
+            while ((linha = leitor.readLine()) != null) {
+                // Encontrar a posição de "R$"
+                // se encontrar o valor na linha, retorna o indice dele, caso contrario retorna
+                // -1;
+                int indiceR = linha.indexOf("R$");
+
+                // Se "R$" for encontrado na linha
+                if (indiceR != -1) {
+                    // Extrair o valor que está após "R$"
+                    /*
+                     * linha.indexOf("R$"): Retorna o índice da primeira ocorrência da string "R$"
+                     * na linha. Se "R$" não for encontrado, indiceR será igual a -1.
+                     * 
+                     * linha.substring(indiceR + 2): Retorna uma substring da linha começando a
+                     * partir da posição indiceR + 2. O + 2 é usado para pular os caracteres "R$" e
+                     * começar a partir do valor.
+                     * 
+                     * .trim(): Remove espaços em branco adicionais antes e depois da substring.
+                     */
+                    String valor = linha.substring(indiceR + 4).trim();
+                    totalEmVendas += Double.parseDouble(valor);
+                }
+            }
+            System.out.println("O total em vendas no dia de hoje foi R$: " + totalEmVendas);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

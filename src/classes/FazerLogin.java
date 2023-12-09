@@ -20,12 +20,12 @@ public class FazerLogin {
 
     public boolean[] realizarLogin() {
         boolean admLogado = false;
-        if (arquivo.arquivoCantina.exists()) {
-            admLogado = leitorArquivo(arquivo.arquivoCantina, this.email, this.senha);
+        if (arquivo.getArquivoCantina().exists()) {
+            admLogado = leitorArquivo(arquivo.getArquivoCantina(), this.email, this.senha);
         }
         boolean funcionarioLogado = false;
-        if (!admLogado && arquivo.arquivoDados.exists()) {
-            funcionarioLogado = leitorArquivo(arquivo.arquivoDados, this.email, this.senha);
+        if (!admLogado && arquivo.getArquivoDados().exists()) {
+            funcionarioLogado = leitorArquivo(arquivo.getArquivoDados(), this.email, this.senha);
         }
 
         boolean[] admOuFuncionario = new boolean[] { admLogado, funcionarioLogado };

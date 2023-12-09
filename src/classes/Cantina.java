@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+import classes.Trabalhadores.Admin;
 import classes.Utilitarios.*;
 
 public class Cantina {
@@ -57,14 +58,6 @@ public class Cantina {
         System.out.println("Digite a sua senha:");
         String userPassword = validacao.validadorDeDados(scannerString.nextLine());
         adiministraor = new Admin(userName, userEmail, userPassword);
-
-        if (!arquivoCantina.exists()) {
-            try {
-                arquivoCantina.createNewFile();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
         String dados = this.nome + " " + adiministraor.getName() + " " + adiministraor.getEmail() + " "
                 + adiministraor.getSenha();
