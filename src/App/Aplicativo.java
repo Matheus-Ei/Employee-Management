@@ -2,6 +2,7 @@ package App;
 
 import java.util.Scanner;
 
+import classes.AdminLogado;
 import classes.Cantina;
 import classes.FazerLogin;
 import classes.Utilitarios.*;
@@ -47,7 +48,10 @@ public class Aplicativo {
 
                 boolean[] admOuFuncionario = fazerLogin.realizarLogin();
                 if (admOuFuncionario[0] || admOuFuncionario[1]) {
-                    
+                    if (admOuFuncionario[0]) {
+                        AdminLogado adminLogado = new AdminLogado();
+                        adminLogado.opcaoDoAdm();
+                    }
                 } else {
                     System.out.println("Email ou senha incorreta, aperte 1 para tentar novamete ou 0 para sair");
                 }
