@@ -1,22 +1,10 @@
-package objetos;
+package classes;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Scanner;
-
-import objetos.Utilitarios.Arquivos;
-
-public class Usuario {
+abstract public class Usuario {
 
     private String nome;
     private String email;
     private String senha;
-    private Boolean isAdmin;
-
-    Cantina cantina = new Cantina();
-    Arquivos arquivo = new Arquivos();
 
     // construtur, sempre que for instanciar um usuario tera que ter esse 3
     // elementos
@@ -25,8 +13,6 @@ public class Usuario {
         this.email = email;
         this.senha = senha;
     }
-
-    Scanner scannerString = new Scanner(System.in);
 
     public String getName() {
         return this.nome;
@@ -42,9 +28,5 @@ public class Usuario {
 
     public void criarConta(String email, String senha) {
 
-    }
-
-    public Boolean getIsAdmin() {
-        return this.isAdmin;
     }
 }

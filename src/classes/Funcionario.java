@@ -1,4 +1,4 @@
-package objetos;
+package classes;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -53,7 +53,7 @@ public class Funcionario extends Usuario {
             }
         }
 
-        String produto = "Nome: " + newProduto.getNOme() + "\tR$: " + newProduto.getValor() + System.lineSeparator();
+        String produto = "Nome: " + newProduto.getNOme() + "    R$: " + newProduto.getValor() + System.lineSeparator();
 
         try (FileWriter escritor = new FileWriter(caminhoParaProdutos, true)) {
             escritor.write(produto);

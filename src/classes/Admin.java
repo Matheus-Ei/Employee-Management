@@ -1,15 +1,16 @@
-package objetos;
+package classes;
 
 import java.util.Scanner;
+
+import classes.Utilitarios.Arquivos;
+import classes.Utilitarios.*;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileReader;
-
-import objetos.Utilitarios.Arquivos;
-import objetos.Utilitarios.FuncaoUtilitaria;
 
 /*
 GRAVAR DADOS EM ARQUIVOS
@@ -31,20 +32,52 @@ import java.io.IOException;
 
 public class Admin extends Usuario {
     Arquivos arquivo = new Arquivos();
+    Scanner scannerString = new Scanner(System.in);
 
     public Admin(String nome, String email, String senha) {
         super(nome, email, senha);
     }
 
-    FuncaoUtilitaria validacao = new FuncaoUtilitaria();
+    FuncaoUtilitaria utilitaria = new FuncaoUtilitaria();
+
+    public void opcaoDoAdm() {
+        System.out.println("Bem vindo! As funcionalidades estão abaixo:");
+        System.out.println("0 - Voltar");
+        System.out.println("1 - Cadastrar funcionario:");
+        System.out.println("2 - Listar funcionarios");
+        System.out.println("3 - Exluir funcionario ");
+
+        String opcao = "-1";
+
+        do {
+            opcao = scannerString.nextLine();
+            switch (opcao) {
+                case "1":
+                    this.cadastrarUsuario();
+                    utilitaria.continuar();
+                    break;
+                case "2":
+                    this.listarUsuarios();
+                    utilitaria.continuar();
+                    break;
+                case "3":
+                    this.deletarUsuario();
+                    utilitaria.continuar();
+                    break;
+
+                default:
+                    break;
+            }
+        } while (!opcao.equals("0"));
+
+    }
 
     public void cadastrarUsuario() {
-        Scanner scanner = new Scanner(System.in);
 
         System.out.println("Digite o seu nome:");
-        String userName = validacao.validadorDeDados(scannerString.nextLine());
+        String userName = utilitaria.validadorDeDados(scannerString.nextLine());
         System.out.println("Digite o seu email:");
-        String userEmail = validacao.validadorDeDados(scannerString.nextLine());
+        String userEmail = utilitaria.validadorDeDados(scannerString.nextLine());
 
         if (arquivo.arquivoUsuarios.exists()) {
             try (FileReader leitorArquivo = new FileReader(arquivo.arquivoUsuarios);
@@ -58,7 +91,7 @@ public class Admin extends Usuario {
                     if (linha.equals("email: " + userEmail)) {
                         System.out.println("Ja tem um usuario cadastrado com esse email");
                         System.out.println("Insira o email novamente");
-                        userEmail = scanner.nextLine();
+                        userEmail = scannerString.nextLine();
                     }
                 }
 
@@ -68,7 +101,7 @@ public class Admin extends Usuario {
         }
 
         System.out.println("Digite a sua senha");
-        String userPassword = validacao.validadorDeDados(scannerString.nextLine());
+        String userPassword = utilitaria.validadorDeDados(scannerString.nextLine());
 
         Funcionario funcionario = new Funcionario(userName, userEmail, userPassword);
 
@@ -81,11 +114,7 @@ public class Admin extends Usuario {
             }
         }
 
-        String dados = "Nome: " + funcionario.getName() + System.lineSeparator() + "    Email: "
-                + funcionario.getEmail()
-                + "    Senha: "
-                + funcionario.getSenha()
-                + System.lineSeparator();
+        String dados = funcionario.getName() + " " + funcionario.getEmail() + " " + funcionario.getSenha();
 
         try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaDadosDoUsuario(), true)) {
             escritor.write(dados);

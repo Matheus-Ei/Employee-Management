@@ -1,4 +1,4 @@
-package objetos;
+package classes;
 
 public class Produto {
     String nome;

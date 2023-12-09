@@ -1,4 +1,4 @@
-package objetos;
+package classes;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -7,7 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-import objetos.Utilitarios.*;
+import classes.Utilitarios.*;
 
 public class Cantina {
     public String nome;
@@ -66,9 +66,8 @@ public class Cantina {
             }
         }
 
-        String dados = "Cantina: " + this.nome + System.lineSeparator() + "Nome: " + adiministraor.getName()
-                + System.lineSeparator() + "Email: "
-                + adiministraor.getEmail() + System.lineSeparator() + "Senha: " + adiministraor.getSenha();
+        String dados = this.nome + " " + adiministraor.getName() + " " + adiministraor.getEmail() + " "
+                + adiministraor.getSenha();
 
         try (FileWriter escritor = new FileWriter(caminhoParaCantina)) {
             escritor.write(dados);

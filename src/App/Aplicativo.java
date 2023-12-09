@@ -2,9 +2,9 @@ package App;
 
 import java.util.Scanner;
 
-// Importações de classes/objetos
-import objetos.Cantina;
-import objetos.Utilitarios.*;
+import classes.Cantina;
+import classes.FazerLogin;
+import classes.Utilitarios.*;
 
 public class Aplicativo {
 
@@ -34,6 +34,7 @@ public class Aplicativo {
          * System.out.println("5-Listar Produtos");
          */
         String opcoes;
+        FazerLogin fazerLogin;
 
         do {
             opcoes = leitorScanner.nextLine();
@@ -42,14 +43,14 @@ public class Aplicativo {
                 String email = utilitaria.validadorDeDados(leitorScanner.nextLine());
                 System.out.println("Digite a seua senha");
                 String senha = utilitaria.validadorDeDados(leitorScanner.nextLine());
-                Boolean isAdmin = cantina.loginAdm(email, senha);
-                Boolean isFuncionario = null;
-                if (!isAdmin) {
-                    isFuncionario = cantina.loginFuncionario(email, senha);
-                }
+                fazerLogin = new FazerLogin(email, senha);
 
-                System.out.println(isAdmin);
-                System.out.println(isFuncionario);
+                boolean[] admOuFuncionario = fazerLogin.realizarLogin();
+                if (admOuFuncionario[0] || admOuFuncionario[1]) {
+                    
+                } else {
+                    System.out.println("Email ou senha incorreta, aperte 1 para tentar novamete ou 0 para sair");
+                }
             }
             /*
              * switch (opcoes) {
