@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 import classes.Utilitarios.Arquivos;
@@ -23,8 +25,8 @@ public class AdminLogado {
         System.out.println("1 - Cadastrar funcionario:");
         System.out.println("2 - Listar funcionarios");
         System.out.println("3 - Exluir funcionario ");
-        System.out.println("4- Exibir relatorio de vendas");
-        System.out.println("5- Ver o total de dinheiro em vendas");
+        System.out.println("4 - Exibir relatorio de vendas");
+        System.out.println("5 - Ver o total de dinheiro em vendas");
 
         String opcao = "-1";
 
@@ -60,8 +62,8 @@ public class AdminLogado {
                 System.out.println("1 - Cadastrar funcionario:");
                 System.out.println("2 - Listar funcionarios");
                 System.out.println("3 - Exluir funcionario ");
-                System.out.println("4- Exibir relatorio de vendas");
-                System.out.println("5- Ver o total de dinheiro em vendas");
+                System.out.println("4 - Exibir relatorio de vendas");
+                System.out.println("5 - Ver o total de dinheiro em vendas");
 
             }
         } while (!opcao.equals("0"));
@@ -75,25 +77,10 @@ public class AdminLogado {
         System.out.println("Digite o seu email:");
         String userEmail = utilitaria.validadorDeDados(scannerString.nextLine());
 
-        if (arquivo.getArquivoUsuario().exists()) {
-            try (FileReader leitorArquivo = new FileReader(arquivo.getArquivoUsuario());
-                    BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
-
-                String linha;
-
-                // Lê cada linha do arquivo
-                while ((linha = bufferedReader.readLine()) != null) {
-                    // Processa cada linha conforme necessário
-                    if (linha.equals("email: " + userEmail)) {
-                        System.out.println("Ja tem um usuario cadastrado com esse email");
-                        System.out.println("Insira o email novamente");
-                        userEmail = scannerString.nextLine();
-                    }
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        while (!this.emailExiste(userEmail)) {
+            System.out.println("Ja tem um usuario cadastrado com esse email");
+            System.out.println("Insira o email novamente");
+            userEmail = scannerString.nextLine();
         }
 
         System.out.println("Digite a sua senha");
@@ -146,7 +133,7 @@ public class AdminLogado {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Digite o email a ser deletado:");
         String email = scanner.nextLine();
-        String deletarLinha = "Email: " + email;
+        String deletarLinha = email;
 
         // Configuração do arquivo temporário
         String temporarioFile = "Temporario.txt";
@@ -226,6 +213,15 @@ public class AdminLogado {
 
     }
 
+    private static String dataHoje() {
+        LocalDate dataAtual = LocalDate.now();
+        // Define o formato desejado para a data
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        // Converte a data para uma string formatada
+        return dataAtual.format(formatter);
+    }
+
     public void acessarTotalEmVendas() {
         try (BufferedReader leitor = new BufferedReader(new FileReader(arquivo.getArquivoRelatorioVendas()))) {
             String linha;
@@ -233,31 +229,81 @@ public class AdminLogado {
             double totalEmVendas = 0;
 
             while ((linha = leitor.readLine()) != null) {
-                // Encontrar a posição de "R$"
-                // se encontrar o valor na linha, retorna o indice dele, caso contrario retorna
-                // -1;
-                int indiceR = linha.indexOf("R$");
+                if (linha.contains(dataHoje())) {
+                    // Encontrar a posição de "R$"
+                    // se encontrar o valor na linha, retorna o indice dele, caso contrario retorna
+                    // -1;
+                    int indiceR = linha.indexOf("R$");
 
-                // Se "R$" for encontrado na linha
-                if (indiceR != -1) {
-                    // Extrair o valor que está após "R$"
-                    /*
-                     * linha.indexOf("R$"): Retorna o índice da primeira ocorrência da string "R$"
-                     * na linha. Se "R$" não for encontrado, indiceR será igual a -1.
-                     * 
-                     * linha.substring(indiceR + 2): Retorna uma substring da linha começando a
-                     * partir da posição indiceR + 2. O + 2 é usado para pular os caracteres "R$" e
-                     * começar a partir do valor.
-                     * 
-                     * .trim(): Remove espaços em branco adicionais antes e depois da substring.
-                     */
-                    String valor = linha.substring(indiceR + 4).trim();
-                    totalEmVendas += Double.parseDouble(valor);
+                    // Se "R$" for encontrado na linha
+                    if (indiceR != -1) {
+                        // Extrair o valor que está após "R$"
+                        /*
+                         * linha.indexOf("R$"): Retorna o índice da primeira ocorrência da string "R$"
+                         * na linha. Se "R$" não for encontrado, indiceR será igual a -1.
+                         * 
+                         * linha.substring(indiceR + 2): Retorna uma substring da linha começando a
+                         * partir da posição indiceR + 2. O + 2 é usado para pular os caracteres "R$" e
+                         * começar a partir do valor.
+                         * 
+                         * .trim(): Remove espaços em branco adicionais antes e depois da substring.
+                         */
+                        String valor = linha.substring(indiceR + 4).trim();
+                        totalEmVendas += Double.parseDouble(valor);
+                    }
                 }
             }
             System.out.println("O total em vendas no dia de hoje foi R$: " + totalEmVendas);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public boolean emailExiste(String userEmail) {
+        boolean emailFuncionario = false;
+        boolean emailAdmin = false;
+
+        if (arquivo.getArquivoUsuario().exists()) {
+            try (FileReader leitorArquivo = new FileReader(arquivo.getArquivoUsuario());
+                    BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
+
+                String linha;
+
+                // Lê cada linha do arquivo
+                while ((linha = bufferedReader.readLine()) != null) {
+                    // Processa cada linha conforme necessário
+                    if (linha.contains(userEmail)) {
+                        emailFuncionario = true;
+                    }
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (arquivo.getArquivoCantina().exists()) {
+            try (FileReader leitorArquivo = new FileReader(arquivo.getArquivoCantina());
+                    BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
+
+                String linha;
+
+                // Lê cada linha do arquivo
+                while ((linha = bufferedReader.readLine()) != null) {
+                    // Processa cada linha conforme necessário
+                    if (linha.contains(userEmail)) {
+                        emailAdmin = true;
+                    }
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (!emailAdmin && !emailFuncionario) {
+            return true;
+        } else {
+            return false;
         }
     }
 }
