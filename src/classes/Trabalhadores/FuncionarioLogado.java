@@ -5,6 +5,8 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
@@ -169,6 +171,7 @@ public class FuncionarioLogado {
 
     private boolean produtoExiste(String nomeProduto) {
         boolean produto = false;
+        String dataAtual = dataHoje();
 
         if (arquivo.getArquivoProdutos().exists() && arquivo.getArquivoProdutos().length() != 0) {
             try (FileReader leitorArquivo = new FileReader(arquivo.getArquivoProdutos());
@@ -182,7 +185,7 @@ public class FuncionarioLogado {
                     if (linha.contains(nomeProduto)) {
                         try (BufferedWriter writer = new BufferedWriter(
                                 new FileWriter(arquivo.getArquivoRelatorioVendas(), true))) {
-                            writer.write(linha + System.lineSeparator());
+                            writer.write(dataAtual + " " + linha + System.lineSeparator());
                         } catch (IOException e) {
                             System.err.println("Erro ao gravar no arquivo: " + e.getMessage());
                         }
@@ -242,7 +245,19 @@ public class FuncionarioLogado {
         }
     }
 
+    private static String dataHoje() {
+        LocalDate dataAtual = LocalDate.now();
+        // Define o formato desejado para a data
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        // Converte a data para uma string formatada
+        return dataAtual.format(formatter);
+    }
+
     private void relatorioVendas() {
+
+        String dataAtual = dataHoje();
+
         if (arquivo.getArquivoRelatorioVendas().exists()) {
             try (FileReader leitorArquivo = new FileReader(arquivo.getArquivoRelatorioVendas());
                     BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
@@ -252,7 +267,9 @@ public class FuncionarioLogado {
                 System.out.println(System.lineSeparator() + "------------------------------------------------------"
                         + System.lineSeparator());
                 while ((linha = bufferedReader.readLine()) != null) {
-                    System.out.println("\t" + linha);
+                    if (linha.contains(dataAtual)) {
+                        System.out.println("\t" + linha);
+                    }
                 }
                 System.out.println(System.lineSeparator() + "------------------------------------------------------"
                         + System.lineSeparator());
