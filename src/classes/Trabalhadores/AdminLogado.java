@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import classes.Utilitarios.Arquivos;
@@ -27,6 +29,8 @@ public class AdminLogado {
         System.out.println("3 - Exluir funcionario ");
         System.out.println("4 - Exibir relatorio de vendas");
         System.out.println("5 - Ver o total de dinheiro em vendas");
+        System.out.println("6 - Ordenar preços");
+        System.out.println("7 - Excluir cantina");
 
         String opcao = "-1";
 
@@ -53,6 +57,14 @@ public class AdminLogado {
                     this.acessarTotalEmVendas();
                     utilitaria.continuar();
                     break;
+                case "6":
+                    this.ordernarPrecos();
+                    utilitaria.continuar();
+                    break;
+                case "7":
+                    this.excluirCantina();
+                    utilitaria.continuar();
+                    break;
                 default:
                     break;
             }
@@ -64,6 +76,8 @@ public class AdminLogado {
                 System.out.println("3 - Exluir funcionario ");
                 System.out.println("4 - Exibir relatorio de vendas");
                 System.out.println("5 - Ver o total de dinheiro em vendas");
+                System.out.println("6 - Ordenar preços");
+                System.out.println("7 - Excluir cantina");
 
             }
         } while (!opcao.equals("0"));
@@ -132,6 +146,7 @@ public class AdminLogado {
     public void deletarUsuario() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Digite o email a ser deletado:");
+        this.listarUsuarios();
         String email = scanner.nextLine();
         String deletarLinha = email;
 
@@ -304,6 +319,99 @@ public class AdminLogado {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public void ordernarPrecos() {
+        if (arquivo.getArquivoProdutos().exists() && arquivo.getArquivoProdutos().length() != 0) {
+            List<String> listaDeStrings = new ArrayList<>();
+            List<Double> listaPrecos = new ArrayList<>();
+
+            try (FileReader leitorArquivo = new FileReader(arquivo.getArquivoProdutos());
+                    BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
+
+                String linha;
+
+                // Lê cada linha do arquivo
+                while ((linha = bufferedReader.readLine()) != null) {
+                    listaDeStrings.add(linha);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (listaDeStrings.size() >= 2) {
+                for (String linhaDoArquivo : listaDeStrings) {
+                    int indiceR = linhaDoArquivo.indexOf("R$");
+                    if (indiceR != -1) {
+                        String valor = linhaDoArquivo.substring(indiceR + 4).trim();
+                        listaPrecos.add(Double.parseDouble(valor));
+                    }
+                }
+
+                for (int i = 0; i < listaPrecos.size(); i++) {
+                    for (int j = 0; j < listaPrecos.size() - 1; j++) {
+                        if (listaPrecos.get(j) > listaPrecos.get(j + 1)) {
+                            Double temporaria = listaPrecos.get(j);
+                            String linhaTemporaria = listaDeStrings.get(j);
+                            listaPrecos.set(j, listaPrecos.get(j + 1));
+                            listaDeStrings.set(j, listaDeStrings.get(j + 1));
+                            listaPrecos.set(j + 1, temporaria);
+                            listaDeStrings.set(j + 1, linhaTemporaria);
+                        }
+                    }
+                }
+                System.out.println("A lista ordenada ficou assim: ");
+
+                try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaProdutos())) {
+                    escritor.write("");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                for (int i = 0; i < listaDeStrings.size(); i++) {
+                    System.out.println(listaDeStrings.get(i));
+                    try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaProdutos(), true)) {
+                        escritor.write(listaDeStrings.get(i) + System.lineSeparator());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                System.out.println("A lista ordenada ficou assim: ");
+                for (int i = 0; i < listaDeStrings.size(); i++) {
+                    System.out.println(listaDeStrings.get(i));
+                }
+            }
+
+        } else {
+            System.out.println("Nenhum produto cadastrado");
+        }
+    }
+
+    public void excluirCantina() {
+        String opcao;
+        System.out.println("Tem certeza que dejeza exluir a cantina?");
+        System.out.println("Digite 1 para: SIM TENHO CERTEZA");
+        System.out.println("Qualquer outra tecla para: NÃO, NÃO QUERO EXCLUIR");
+        opcao = scannerString.nextLine();
+        if (opcao.equals("1")) {
+            deletarArquivo(arquivo.getArquivoCantina());
+            deletarArquivo(arquivo.getArquivoDados());
+            deletarArquivo(arquivo.getArquivoFilaDeProdutos());
+            deletarArquivo(arquivo.getArquivoProdutos());
+            deletarArquivo(arquivo.getArquivoRelatorioVendas());
+            deletarArquivo(arquivo.getArquivoUsuario());
+        }
+    }
+
+    private static void deletarArquivo(File nomeDoArquivo) {
+        if (nomeDoArquivo.exists()) {
+            if (!nomeDoArquivo.delete()) {
+                System.out.println("Não foi possível deletar o arquivo original.");
+                return;
+            }
         }
     }
 }
