@@ -7,7 +7,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
 
@@ -36,6 +38,7 @@ public class FuncionarioLogado {
         System.out.println("4 - Marcar pedido como concluido");
         System.out.println("5 - Proximo produto a ser feito");
         System.out.println("6 - Relatiorio de vendas");
+        System.out.println("7 - Ordenar preços");
 
         String opcao = "-1";
 
@@ -66,6 +69,10 @@ public class FuncionarioLogado {
                     this.relatorioVendas();
                     utilitaria.continuar();
                     break;
+                case "7":
+                    this.ordernarPrecos();
+                    utilitaria.continuar();
+                    break;
                 default:
                     break;
             }
@@ -78,6 +85,7 @@ public class FuncionarioLogado {
                 System.out.println("4 - Marcar pedido como concluido");
                 System.out.println("5 - Proximo produto a ser feito");
                 System.out.println("6 - Relatiorio de vendas");
+                System.out.println("7 - Ordenar preços");
 
             }
         } while (!opcao.equals("0"));
@@ -252,6 +260,74 @@ public class FuncionarioLogado {
 
         // Converte a data para uma string formatada
         return dataAtual.format(formatter);
+    }
+
+    public void ordernarPrecos() {
+        if (arquivo.getArquivoProdutos().exists() && arquivo.getArquivoProdutos().length() != 0) {
+            List<String> listaDeStrings = new ArrayList<>();
+            List<Double> listaPrecos = new ArrayList<>();
+
+            try (FileReader leitorArquivo = new FileReader(arquivo.getArquivoProdutos());
+                    BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
+
+                String linha;
+
+                // Lê cada linha do arquivo
+                while ((linha = bufferedReader.readLine()) != null) {
+                    listaDeStrings.add(linha);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (listaDeStrings.size() >= 2) {
+                for (String linhaDoArquivo : listaDeStrings) {
+                    int indiceR = linhaDoArquivo.indexOf("R$");
+                    if (indiceR != -1) {
+                        String valor = linhaDoArquivo.substring(indiceR + 4).trim();
+                        listaPrecos.add(Double.parseDouble(valor));
+                    }
+                }
+
+                for (int i = 0; i < listaPrecos.size(); i++) {
+                    for (int j = 0; j < listaPrecos.size() - 1; j++) {
+                        if (listaPrecos.get(j) > listaPrecos.get(j + 1)) {
+                            Double temporaria = listaPrecos.get(j);
+                            String linhaTemporaria = listaDeStrings.get(j);
+                            listaPrecos.set(j, listaPrecos.get(j + 1));
+                            listaDeStrings.set(j, listaDeStrings.get(j + 1));
+                            listaPrecos.set(j + 1, temporaria);
+                            listaDeStrings.set(j + 1, linhaTemporaria);
+                        }
+                    }
+                }
+                System.out.println("A lista ordenada ficou assim: ");
+
+                try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaProdutos())) {
+                    escritor.write("");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                for (int i = 0; i < listaDeStrings.size(); i++) {
+                    System.out.println(listaDeStrings.get(i));
+                    try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaProdutos(), true)) {
+                        escritor.write(listaDeStrings.get(i) + System.lineSeparator());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                System.out.println("A lista ordenada ficou assim: ");
+                for (int i = 0; i < listaDeStrings.size(); i++) {
+                    System.out.println(listaDeStrings.get(i));
+                }
+            }
+
+        } else {
+            System.out.println("Nenhum produto cadastrado");
+        }
     }
 
     private void relatorioVendas() {
