@@ -1,7 +1,8 @@
 package classes.Utilitarios;
 
 import java.util.Scanner;
-
+//funções utilitarias que são usadas em mais de um arquivo, estão aqui,
+//para reutilizar codigo
 public class FuncaoUtilitaria {
 
     public String validadorDeDados(String dado) {

@@ -1,5 +1,8 @@
 package classes.Trabalhadores;
 
+//crio a classe Usuario e fiz ela ser abstrata para 
+//nao poder ser instanciada, pois ninguem pode criar um ususario
+//somente pode criar Admin e Funcionarios que são as classes que herdam Usuario
 abstract public class Usuario {
 
     private String nome;

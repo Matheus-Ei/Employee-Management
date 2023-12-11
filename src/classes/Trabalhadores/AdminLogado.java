@@ -42,7 +42,7 @@ public class AdminLogado {
         // dando
         // erro caso alguem digite um valor que nao seja numerico na entra de valors
 
-        // o switch case chamando os metodos conferme a opção selecionada
+        // o switch-case chamando os metodos conforme a opção selecionada
         do {
             opcao = scannerString.nextLine();
             switch (opcao) {
@@ -95,31 +95,45 @@ public class AdminLogado {
 
     public void cadastrarUsuario() {
 
+        //aqui eu leio o valor do nome e do email para realizar o login
+        //o valor digitado vai para um metodo chamado validorDeDados
+        //se passar do validador ai é atribuido a variavel
         System.out.println("Digite o seu nome:");
         String userName = utilitaria.validadorDeDados(scannerString.nextLine());
         System.out.println("Digite o seu email:");
         String userEmail = utilitaria.validadorDeDados(scannerString.nextLine());
 
+        
+        //aqui eu faço outra validação, onde se o email ja existir nao podera ser criado a conta
+        //e verifica o email de feuncionarios e o email de administrador e me retorna em boolean
         while (!this.emailExiste(userEmail)) {
             System.out.println("Ja tem um usuario cadastrado com esse email");
             System.out.println("Insira o email novamente");
-            userEmail = scannerString.nextLine();
+            userEmail = utilitaria.validadorDeDados(scannerString.nextLine());
         }
 
+        //leio a senha do usuario
         System.out.println("Digite a sua senha");
         String userPassword = utilitaria.validadorDeDados(scannerString.nextLine());
 
+        //instancio um funcionario passando os valores obtidos acima
         Funcionario funcionario = new Funcionario(userName, userEmail, userPassword);
 
+        //crio oque será escrito no arquivo
         String dados = funcionario.getName() + " " + funcionario.getEmail() + " " + funcionario.getSenha()
                 + System.lineSeparator();
 
+        //crio um objeto escritor da classe FileWriter, o seu contrutor recebe 2 valores, o primeiro 
+        //é o caminho completo para o arquivo e o segundo é uma valor boolean para append, 
+        //que serve para continuar escrevendo ao fim do arquivo e nao sobreescrever oque esta lá
         try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaDadosDoUsuario(), true)) {
             escritor.write(dados);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        //a criação de um novo funcionario é resulta em 2 arquivos, um com nome, email, senha
+        //e outro somente com nome e email que o que esta abaixo
         try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaTodosUsuarios(), true)) {
             escritor.write("Funcionario: " + funcionario.getName() + "\tEmail: " + funcionario.getEmail()
                     + System.lineSeparator());
@@ -128,8 +142,27 @@ public class AdminLogado {
         }
     }
 
+    /*aqui é feito a listagem de funcionarios que estao esritos no segundo
+    arquivo que eu crio no metodo de cima*/
     public void listarUsuarios() {
         if (arquivo.getArquivoUsuario().exists()) {
+            /*aqui é feito a leitura do aquivo, onde eu uso a classe FileRader
+            em seu contrutor ele espera receber um dado do tipo File, que é o arquivo que tem os dados
+            após isso é usado a classe BufferedReader, que melhora a eficiencia pois ele vai ler 
+            blocos de informações e nao caractere por caractere
+            o seu construtur espera seceber um leitor, que é onde eu passo o leitorArquivo criado
+            anteriormente
+
+            o try com () é chamado de try-with-resources e serve para fechar as coisa que abriu
+            dentro dos ()
+
+            Explicação da documentação: 
+            A instrução try-with-resources é uma instrução try que declara um ou mais recursos. 
+            Um recurso é um objeto que deve ser fechado após a conclusão do programa. 
+            A instrução try-with-resources garante que cada recurso seja fechado no final da instrução. 
+            Qualquer objeto que implemente java.lang.AutoCloseable, que inclui todos os objetos 
+            que implementam java.io.Closeable, pode ser usado como recurso.
+            */
             try (FileReader leitorArquivo = new FileReader(arquivo.getArquivoUsuario());
                     BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
 
@@ -152,10 +185,12 @@ public class AdminLogado {
 
     }
 
+    //função para deletar a conta de um usuario
     public void deletarUsuario() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Digite o email a ser deletado:");
         this.listarUsuarios();
+        //leio o email a ser deletado
         String email = scanner.nextLine();
         String deletarLinha = email;
 
@@ -164,13 +199,16 @@ public class AdminLogado {
         String caminhoTemporario = arquivo.getDiretorioAreaDeTrabalho() + temporarioFile;
         File arquivoTemporario = new File(caminhoTemporario);
 
+        /*chamo um metodo static para fazer a toca de arquivos, se ele encontar o email a ser
+        deletado ai ele remove dos dois aquivos que for criado, passa os valores para um arquivo 
+        temporario e renomia o arquivo temporario
+        */
         fazerTrocaDeArquivos(arquivo.getArquivoUsuario(), arquivoTemporario, deletarLinha);
         fazerTrocaDeArquivos(arquivo.getArquivoDados(), arquivoTemporario, deletarLinha);
 
     }
 
-    // usa o static para nao precisar instanciar ela dentro de onde for usar pelo
-    // que eu entendi
+    // usa o static para nao precisar instanciar ela dentro de onde for usar pelo que eu entendi
     private static void fazerTrocaDeArquivos(File caminhoArquivo, File caminhoTemporario, String deletarLinha) {
         if (caminhoArquivo.exists()) {
             try (BufferedReader bufferedReader = new BufferedReader(new FileReader(caminhoArquivo));
@@ -213,6 +251,9 @@ public class AdminLogado {
         }
     }
 
+    //aqui eu mostro o relatorio de vendas 
+    //é semelhante as metodos anteriores, 
+    //eu leio o arquivo com bufferedReader e printo na tela os valores
     private void relatorioVendas() {
         if (arquivo.getArquivoRelatorioVendas().exists() && arquivo.getArquivoRelatorioVendas().length() != 0) {
             try (FileReader leitorArquivo = new FileReader(arquivo.getArquivoRelatorioVendas());
@@ -237,7 +278,9 @@ public class AdminLogado {
 
     }
 
+    //retorno a data do dia de hoje formatada para como usamos no brasil
     private static String dataHoje() {
+        //busca a data do dia de hoje
         LocalDate dataAtual = LocalDate.now();
         // Define o formato desejado para a data
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -263,14 +306,14 @@ public class AdminLogado {
                     if (indiceR != -1) {
                         // Extrair o valor que está após "R$"
                         /*
-                         * linha.indexOf("R$"): Retorna o índice da primeira ocorrência da string "R$"
-                         * na linha. Se "R$" não for encontrado, indiceR será igual a -1.
-                         * 
-                         * linha.substring(indiceR + 2): Retorna uma substring da linha começando a
-                         * partir da posição indiceR + 2. O + 2 é usado para pular os caracteres "R$" e
-                         * começar a partir do valor.
-                         * 
-                         * .trim(): Remove espaços em branco adicionais antes e depois da substring.
+                         linha.indexOf("R$"): Retorna o índice da primeira ocorrência da string "R$"
+                         na linha. Se "R$" não for encontrado, indiceR será igual a -1.
+                         
+                         linha.substring(indiceR + 2): Retorna uma substring da linha começando a
+                         partir da posição indiceR + 2. O + 2 é usado para pular os caracteres "R$" e
+                         começar a partir do valor.
+                         
+                         .trim(): Remove espaços em branco adicionais antes e depois da substring.
                          */
                         String valor = linha.substring(indiceR + 4).trim();
                         totalEmVendas += Double.parseDouble(valor);
@@ -283,6 +326,9 @@ public class AdminLogado {
         }
     }
 
+    //aqui eu leio os dois arquivos que contem dados dos usuarios, e caso o email ja axistir
+    //ele vai retornar um valor booleano true, caso nao existir ele retorna false
+    //entao pode ser criado uma nova conta com o email
     public boolean emailExiste(String userEmail) {
         boolean emailFuncionario = false;
         boolean emailAdmin = false;
@@ -331,10 +377,24 @@ public class AdminLogado {
         }
     }
 
+    //aqui eu tenho a função de ordenação, que foi solicitada no trabalho, 
+    //ela ordena os preços do menor para o maior e altera o arquivo com os preços em ordem 
     public void ordernarPrecos() {
         if (arquivo.getArquivoProdutos().exists() && arquivo.getArquivoProdutos().length() != 0) {
+            /*crio algo como se fosse 2 arrays, onde é possivel usar funções 
+            para acresentar valores na lista, pegar determinado valor pelo index
+            remover valor e essas coisas
+            pelo que pesquisei, quando se cria um array em java não era possivel adicionar novos
+            valor no seu final e começo usando algo como push ou unshift que tem em outras
+            linguagens como php, javascript, entre outras, por isso se cria uma lista em java para
+            ter essas opções
+            */
             List<String> listaDeStrings = new ArrayList<>();
             List<Double> listaPrecos = new ArrayList<>();
+
+            /*aqui eu faço a leitura do arquivo que contem os produtos e adiciono 
+            cada linha do arquivo em uma posição da lista com a função .add(valor)
+            */
 
             try (FileReader leitorArquivo = new FileReader(arquivo.getArquivoProdutos());
                     BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
@@ -350,8 +410,25 @@ public class AdminLogado {
                 e.printStackTrace();
             }
 
+            /*
+             * caso a lista possua mais de 1 valor eu prosigo com a ordenação
+             */
+
             if (listaDeStrings.size() >= 2) {
+
+                /*
+                 * aqui muito semelhante, senhao igual a função de somar os valores mostrada
+                 * anteriomente, como eu possuo um array somente com strings, nao teria como eu 
+                 * conseguir ordenar os valores. Entao eu crio um novo array só com os valores numericos
+                 * de cada linha, para depois conseguir fazer um buble sort e ordenar os arrays
+                 */
                 for (String linhaDoArquivo : listaDeStrings) {
+                    /*
+                     * como ja falado a função indexOf me retorna o index da linha onde tem tal valor
+                     * se nao tiver retorna -1
+                     * com o subtring eu crio uma string menos somente com o valor dos produtos e 
+                     * depois tranformo eles em valores numericos
+                     */
                     int indiceR = linhaDoArquivo.indexOf("R$");
                     if (indiceR != -1) {
                         String valor = linhaDoArquivo.substring(indiceR + 4).trim();
@@ -359,6 +436,7 @@ public class AdminLogado {
                     }
                 }
 
+                //aqui é feita a odenação dos valores
                 for (int i = 0; i < listaPrecos.size(); i++) {
                     for (int j = 0; j < listaPrecos.size() - 1; j++) {
                         if (listaPrecos.get(j) > listaPrecos.get(j + 1)) {
@@ -373,12 +451,14 @@ public class AdminLogado {
                 }
                 System.out.println("A lista ordenada ficou assim: ");
 
+                //aqui eu limpo o arquivo que contia os produtos
                 try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaProdutos())) {
                     escritor.write("");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
+                //e aqui eu printo na tela a lista ordenada e juntamente reescrevo o arquivo
                 for (int i = 0; i < listaDeStrings.size(); i++) {
                     System.out.println(listaDeStrings.get(i));
                     try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaProdutos(), true)) {
@@ -399,6 +479,7 @@ public class AdminLogado {
         }
     }
 
+    //aqui eu excluo todos os arquivos da cantina
     public void excluirCantina() {
         String opcao;
         System.out.println("Tem certeza que dejeza exluir a cantina?");

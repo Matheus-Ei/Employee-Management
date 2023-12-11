@@ -2,6 +2,7 @@ package classes.Utilitarios;
 
 import java.io.File;
 
+//Classe Arquivos onde contem todos diretorios criados no aplicativo
 public class Arquivos {
     private String diretorioAreaDeTrabalho = System.getProperty("user.home") + "/Desktop/";
     private String dadosDoUsuario = "DadosDoUsuario.txt";
