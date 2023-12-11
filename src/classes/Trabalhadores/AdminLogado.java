@@ -15,12 +15,17 @@ import java.util.Scanner;
 import classes.Utilitarios.Arquivos;
 import classes.Utilitarios.FuncaoUtilitaria;
 
+//Aqui temos a classe AdminLogado que vai ser chamada assim que o email e senha 
+//estiverem corretos
 public class AdminLogado {
     Scanner scannerString = new Scanner(System.in);
     Arquivos arquivo = new Arquivos();
 
     FuncaoUtilitaria utilitaria = new FuncaoUtilitaria();
 
+    // metodo opcaoDoAdm mostra todas as coisa que o amd pode fazer, e de acordo com
+    // o numero que ele digitar
+    // vai executar uma metodo diferente
     public void opcaoDoAdm() {
         System.out.println("Bem vindo! As funcionalidades estão abaixo:");
         System.out.println("0 - Voltar");
@@ -33,7 +38,11 @@ public class AdminLogado {
         System.out.println("7 - Excluir cantina");
 
         String opcao = "-1";
+        // optamos por usar a opção como string mesmo sendo um numero para nao ficar
+        // dando
+        // erro caso alguem digite um valor que nao seja numerico na entra de valors
 
+        // o switch case chamando os metodos conferme a opção selecionada
         do {
             opcao = scannerString.nextLine();
             switch (opcao) {
