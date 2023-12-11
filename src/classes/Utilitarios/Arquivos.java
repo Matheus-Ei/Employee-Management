@@ -20,6 +20,8 @@ public class Arquivos {
     private String caminhoParaFilaDeProdutos = diretorioAreaDeTrabalho + filaDeProdutos;
     private String caminhoParaRelatorioVendas = diretorioAreaDeTrabalho + relatorioVendas;
 
+
+    //criando os arquivos
     private File arquivoDados = new File(caminhoParaDadosDoUsuario);
     private File arquivoUsuarios = new File(caminhoParaTodosUsuarios);
     private File arquivoCantina = new File(caminhoParaCantina);
@@ -90,6 +92,7 @@ public class Arquivos {
         criarArquivo(arquivoRelatorioVendas);
         return arquivoRelatorioVendas;
     }
+
 
     private static void criarArquivo(File arquivo) {
         if (!arquivo.exists()) {

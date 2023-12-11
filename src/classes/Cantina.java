@@ -13,15 +13,6 @@ import classes.Utilitarios.*;
 public class Cantina {
     public String nome;
 
-    String diretorioAreaDeTrabalho = System.getProperty("user.home") + "/Desktop/";
-
-    // Nome do arquivo
-    String dadosCantina = "Cantina.txt";
-
-    // Caminho completo do arquivo
-    String caminhoParaCantina = diretorioAreaDeTrabalho + dadosCantina;
-
-    File arquivoCantina = new File(caminhoParaCantina);
     Arquivos arquivo = new Arquivos();
     FuncaoUtilitaria validacao = new FuncaoUtilitaria();
 
@@ -59,10 +50,12 @@ public class Cantina {
         String userPassword = validacao.validadorDeDados(scannerString.nextLine());
         adiministraor = new Admin(userName, userEmail, userPassword);
 
+        //formato os dados para enviar para o arquivo
         String dados = this.nome + " " + adiministraor.getName() + " " + adiministraor.getEmail() + " "
                 + adiministraor.getSenha();
 
-        try (FileWriter escritor = new FileWriter(caminhoParaCantina)) {
+        //escrevo os dados no arquivo
+        try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaCantina())) {
             escritor.write(dados);
         } catch (IOException e) {
             e.printStackTrace();

@@ -380,28 +380,18 @@ public class AdminLogado {
     //aqui eu tenho a função de ordenação, que foi solicitada no trabalho, 
     //ela ordena os preços do menor para o maior e altera o arquivo com os preços em ordem 
     public void ordernarPrecos() {
+        //verefico se o arquivo existe
         if (arquivo.getArquivoProdutos().exists() && arquivo.getArquivoProdutos().length() != 0) {
-            /*crio algo como se fosse 2 arrays, onde é possivel usar funções 
-            para acresentar valores na lista, pegar determinado valor pelo index
-            remover valor e essas coisas
-            pelo que pesquisei, quando se cria um array em java não era possivel adicionar novos
-            valor no seu final e começo usando algo como push ou unshift que tem em outras
-            linguagens como php, javascript, entre outras, por isso se cria uma lista em java para
-            ter essas opções
-            */
+            //crio uma lista de dados, é algo semelhante a um array
             List<String> listaDeStrings = new ArrayList<>();
             List<Double> listaPrecos = new ArrayList<>();
-
-            /*aqui eu faço a leitura do arquivo que contem os produtos e adiciono 
-            cada linha do arquivo em uma posição da lista com a função .add(valor)
-            */
 
             try (FileReader leitorArquivo = new FileReader(arquivo.getArquivoProdutos());
                     BufferedReader bufferedReader = new BufferedReader(leitorArquivo)) {
 
                 String linha;
 
-                // Lê cada linha do arquivo
+                // Lê cada linha do arquivo e adiciona ao final do array
                 while ((linha = bufferedReader.readLine()) != null) {
                     listaDeStrings.add(linha);
                 }
@@ -410,38 +400,32 @@ public class AdminLogado {
                 e.printStackTrace();
             }
 
-            /*
-             * caso a lista possua mais de 1 valor eu prosigo com a ordenação
-             */
-
+            //caso a lista tenha mais de 1 dado ele continua com a ordenação
             if (listaDeStrings.size() >= 2) {
-
-                /*
-                 * aqui muito semelhante, senhao igual a função de somar os valores mostrada
-                 * anteriomente, como eu possuo um array somente com strings, nao teria como eu 
-                 * conseguir ordenar os valores. Entao eu crio um novo array só com os valores numericos
-                 * de cada linha, para depois conseguir fazer um buble sort e ordenar os arrays
-                 */
+                //para valor da lista de strings vou remover somente o valor contido na linha
+                //e adicionar a uma outra lista somente com os valore
                 for (String linhaDoArquivo : listaDeStrings) {
-                    /*
-                     * como ja falado a função indexOf me retorna o index da linha onde tem tal valor
-                     * se nao tiver retorna -1
-                     * com o subtring eu crio uma string menos somente com o valor dos produtos e 
-                     * depois tranformo eles em valores numericos
-                     */
+                    //verefico se na linha tem escrito R$, caso tiver ele retorna o index
+                    //se nao encontrar retorna -1
                     int indiceR = linhaDoArquivo.indexOf("R$");
                     if (indiceR != -1) {
+                        //crio substrings com o valor
                         String valor = linhaDoArquivo.substring(indiceR + 4).trim();
+                        //adiciono os valores a lista
                         listaPrecos.add(Double.parseDouble(valor));
                     }
                 }
 
-                //aqui é feita a odenação dos valores
+                //faço a ordenação dos valores, listaPrecos.size retona o tamanho da lista
+                //bouble sort
                 for (int i = 0; i < listaPrecos.size(); i++) {
                     for (int j = 0; j < listaPrecos.size() - 1; j++) {
                         if (listaPrecos.get(j) > listaPrecos.get(j + 1)) {
+                            //crio uma varivel temporaria para o valor
                             Double temporaria = listaPrecos.get(j);
+                            //crio uma varivel temporaria para a linha
                             String linhaTemporaria = listaDeStrings.get(j);
+                            //nas linhas abaixo faço a troca dos valores
                             listaPrecos.set(j, listaPrecos.get(j + 1));
                             listaDeStrings.set(j, listaDeStrings.get(j + 1));
                             listaPrecos.set(j + 1, temporaria);
@@ -451,14 +435,14 @@ public class AdminLogado {
                 }
                 System.out.println("A lista ordenada ficou assim: ");
 
-                //aqui eu limpo o arquivo que contia os produtos
+                //limpo o arquivo de produtos
                 try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaProdutos())) {
                     escritor.write("");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                //e aqui eu printo na tela a lista ordenada e juntamente reescrevo o arquivo
+                //reescrevo os valores ordenados no arquivo e printo na tela
                 for (int i = 0; i < listaDeStrings.size(); i++) {
                     System.out.println(listaDeStrings.get(i));
                     try (FileWriter escritor = new FileWriter(arquivo.getCaminhoParaProdutos(), true)) {
@@ -496,6 +480,8 @@ public class AdminLogado {
         }
     }
 
+    //função deletarArquivo, primeiro verefica se o arquivo existe
+    //para nao gerar nenhum erro, após isso ele tenda deletar o arquivo
     private static void deletarArquivo(File nomeDoArquivo) {
         if (nomeDoArquivo.exists()) {
             if (!nomeDoArquivo.delete()) {

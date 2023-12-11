@@ -1,8 +1,8 @@
 package classes;
 
 public class Produto {
-    String nome;
-    double valor;
+    private String nome;
+    private double valor;
 
     public Produto(String nome, double valor) {
         this.nome = nome;

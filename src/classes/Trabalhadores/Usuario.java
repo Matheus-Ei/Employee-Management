@@ -9,27 +9,25 @@ abstract public class Usuario {
     private String email;
     private String senha;
 
-    // construtur, sempre que for instanciar um usuario tera que ter esse 3
-    // elementos
+    // construtor, sempre que for instanciar um usuario tera que ter esses 3 elementos
     public Usuario(String nome, String email, String senha) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
     }
 
+    //função para ger o nome
     public String getName() {
         return this.nome;
     }
 
+    //função para pegar o email
     public String getEmail() {
         return this.email;
     }
 
+    //função para pegar a senha
     public String getSenha() {
         return this.senha;
-    }
-
-    public void criarConta(String email, String senha) {
-
     }
 }

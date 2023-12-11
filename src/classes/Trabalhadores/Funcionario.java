@@ -11,7 +11,9 @@ public class Funcionario extends Usuario {
 
     Arquivos arquivo = new Arquivos();
 
+    //Contrutor da classe, espera 3 valores que sao passados para o super
     public Funcionario(String nome, String email, String senha) {
+        //super é o contrutor da classe Usuario
         super(nome, email, senha);
     }
 }
